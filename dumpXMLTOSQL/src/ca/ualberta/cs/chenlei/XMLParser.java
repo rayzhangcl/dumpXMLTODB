@@ -24,16 +24,15 @@ public class XMLParser extends DefaultHandler{
 	Connection con = null;
 	Statement st = null;
 	private String tempVal;
-	private Employee tempEmp;
-	private boolean end = false;
-	
+	private Employee tempEmp;	
 
 	private void parseDocument() {
 		//myEmpls = new ArrayList<Employee>();
-		//get a factory
+		//connect database
 		connectDB connectdb = new connectDB();
 		con = connectdb.conDB();
 		
+		//get a factory
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		try {
 
@@ -50,6 +49,13 @@ public class XMLParser extends DefaultHandler{
 		}catch (IOException ie) {
 			ie.printStackTrace();
 		}
+		
+		try{
+			con.close();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	//Event Handlers
@@ -70,41 +76,29 @@ public class XMLParser extends DefaultHandler{
 
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 
-		//if(qName.equalsIgnoreCase("Employee")) {
-			//add it to the list
-			//myEmpls.add(tempEmp);
+		if(qName.equalsIgnoreCase("Employee")) {
+			//an entry is ready and save it
+			try{
+				Statement st = con.createStatement();
+				st.executeUpdate("insert into employee values ('"+ tempEmp.getType() + "','"+ tempEmp.getName()+
+						"','"+tempEmp.getId()+ "','" + tempEmp.getAge() +"')");
+				st.close();
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}
 
-		//}else 
-		if (qName.equalsIgnoreCase("Name")) {
+		}else if (qName.equalsIgnoreCase("Name")) {
 			tempEmp.setName(tempVal);
 		}else if (qName.equalsIgnoreCase("Id")) {
 			tempEmp.setId(Integer.parseInt(tempVal));
 		}else if (qName.equalsIgnoreCase("Age")) {
 			tempEmp.setAge(Integer.parseInt(tempVal));
-			end = true;
 		}
-        
-		if(end){
-		try{
-			Statement st = con.createStatement();
-			st.executeUpdate("insert into employee values ('"+ tempEmp.getType() + "','"+ tempEmp.getName()+
-					"','"+tempEmp.getId()+ "','" + tempEmp.getAge() +"')");
-			st.close();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-		end = false;
-		}
-
-
 	}
 
 	public static void main(String[] args){
 		XMLParser xmlp = new XMLParser();
 		xmlp.parseDocument();
-
-
-
 
 		//ArrayList<Employee> myEmpls = xmlp.parseDocument();
 
