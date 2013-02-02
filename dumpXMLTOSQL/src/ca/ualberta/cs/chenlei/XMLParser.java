@@ -1,6 +1,8 @@
 package ca.ualberta.cs.chenlei;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +19,11 @@ import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
+//import com.mysql.jdbc.Statement;
+//import com.mysql.jdbc.Connection;
+
+
+
 
 
 public class XMLParser extends DefaultHandler{
@@ -24,7 +31,10 @@ public class XMLParser extends DefaultHandler{
 	Connection con = null;
 	Statement st = null;
 	//private String tempVal;
-	private Badges tempO;
+	private Employee tempO;
+	private StringBuilder tempString = new StringBuilder();
+	private static StringBuilder left = new StringBuilder();
+	private int count = 0;
 
 	private void parseDocument() {
 		//myEmpls = new ArrayList<Employee>();
@@ -40,7 +50,7 @@ public class XMLParser extends DefaultHandler{
 			SAXParser sp = spf.newSAXParser();
 
 			//parse the file and also register this class for call backs
-			sp.parse("stack-overflow/*.xml", this);
+			sp.parse("employees.xml", this);
 
 		}catch(SAXException se) {
 			se.printStackTrace();
@@ -62,24 +72,37 @@ public class XMLParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		//tempVal = "";
-		tempO = new Badges();
+		tempO = new Employee();
 		if(qName.equalsIgnoreCase("row")) {
 			//create a new instance of employee
-			tempO.setId(Integer.parseInt(attributes.getValue("Id")));
+			tempO.setType(attributes.getValue("type"));
 			tempO.setName(attributes.getValue("Name"));
-			tempO.setUserId(Integer.parseInt(attributes.getValue("UserId")));
-			tempO.setDate(attributes.getValue("Date"));
-			System.out.println(tempO.toString()+"\n");
+			tempO.setId(Integer.parseInt(attributes.getValue("Id")));
+			tempO.setAge(Integer.parseInt(attributes.getValue("Age")));
+			//tempO.setUserId(Integer.parseInt(attributes.getValue("UserId")));
+			//tempO.setDate(attributes.getValue("Date"));
+			count++;
+			tempString.append("('"+tempO.getType()+"','"+tempO.getName()+"','"+tempO.getId()+"','"+tempO.getAge()+"'),");
+			//System.out.println(tempO.toString()+"\n");
 
+		}
+		//1000 times
+		if(count == 10){
+			//InputStream is = new ByteArrayInputStream(tempString.toString().getBytes());
+			tempString.deleteCharAt(tempString.length()-1);
+			System.out.println("save " + count +" rows now ...");
 			try{
 				Statement st = con.createStatement();
-				st.executeUpdate("insert into badges values ('"+ tempO.getId() + "','"+ tempO.getUserId()+
-						"','"+tempO.getName()+ "','" + tempO.getDate() +"')");
+                st.executeUpdate("insert into employee values "+ tempString);
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
+			System.out.println("done!");
+			count = 1;
+            tempString.delete(0, tempString.capacity());
 		}
+		left = tempString;
 
 		/*else if (qName.equalsIgnoreCase("Name")) {
 			pName = true;
@@ -145,6 +168,17 @@ public class XMLParser extends DefaultHandler{
 	public static void main(String[] args){
 		XMLParser xmlp = new XMLParser();
 		xmlp.parseDocument();
+		//save the last part
+		connectDB connectdb = new connectDB();
+		Connection connect = connectdb.conDB();
+		left.deleteCharAt(left.length()-1);
+		try{
+			Statement st = connect.createStatement();
+            st.executeUpdate("insert into employee values "+ left);
+			st.close();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		//ArrayList<Employee> myEmpls = xmlp.parseDocument();
 
