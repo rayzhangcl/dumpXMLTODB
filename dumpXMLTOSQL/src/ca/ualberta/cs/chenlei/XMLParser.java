@@ -1,19 +1,13 @@
 package ca.ualberta.cs.chenlei;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.sql.PreparedStatement;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -23,36 +17,28 @@ import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-//import com.mysql.jdbc.Statement;
-//import com.mysql.jdbc.Connection;
-
-
-
 
 
 public class XMLParser extends DefaultHandler{
 	//ArrayList<Employee> myEmpls = null;
 	Connection con = null;
 	Statement st = null;
-	PreparedStatement pst = null;
 	//private String tempVal;
-	private Employee tempO;
+	private Users tempO;
+	PreparedStatement pst = null;
 	private StringBuilder tempString = new StringBuilder();
 	private static StringBuilder left = new StringBuilder();
 	private int count = 0;
-
 	private void parseDocument() {
 		//myEmpls = new ArrayList<Employee>();
 		//connect database
 		connectDB connectdb = new connectDB();
 		con = connectdb.conDB();
-		
-		/*try{pst = con.prepareStatement("insert into Employee '(' Id','Reputation', 'CreationDate','DisplayName','" +
-				"EmailHash','LastAccessDate',' WebsiteUrl','Location','Age','AboutMe',' Views',' UpVotes',' DownVotes')'" +
-				"Values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+
+		try{pst = con.prepareStatement("insert into users values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		}catch (SQLException e) {
 			e.printStackTrace();
-		}*/
+		}
 		//get a factory
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		try {
@@ -61,7 +47,7 @@ public class XMLParser extends DefaultHandler{
 			SAXParser sp = spf.newSAXParser();
 
 			//parse the file and also register this class for call backs
-			sp.parse("employees.xml", this);
+			sp.parse("stack-overflow/users.xml", this);
 
 		}catch(SAXException se) {
 			se.printStackTrace();
@@ -72,6 +58,7 @@ public class XMLParser extends DefaultHandler{
 		}
 
 		try{
+			pst.executeBatch();
 			con.close();
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -83,63 +70,90 @@ public class XMLParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		//tempVal = "";
-		tempO = new Employee();
+		tempO = new Users();
 		if(qName.equalsIgnoreCase("row")) {
 			//create a new instance of employee
-			tempO.setType(attributes.getValue("type"));
-			tempO.setName(attributes.getValue("Name"));
-			tempO.setId(Integer.parseInt(attributes.getValue("Id")));
-			tempO.setAge(Integer.parseInt(attributes.getValue("Age")));
-			//tempO.setUserId(Integer.parseInt(attributes.getValue("UserId")));
-			//tempO.setDate(attributes.getValue("Date"));
+			tempO.setId(attributes.getValue("Id"));
+			tempO.setReputation(attributes.getValue("Reputation"));	
+			tempO.setCreationDate(attributes.getValue("CreationDate"));
+			tempO.setDisplayName(attributes.getValue("DisplayName"));
+			tempO.setEmailHash(attributes.getValue("EmailHash"));
+			tempO.setLastAccessDate(attributes.getValue("LastAccessDate"));
+			tempO.setWebsiteUrl(attributes.getValue("WebsiteUrl"));
+			tempO.setLocation(attributes.getValue("Location"));
+			tempO.setAge(attributes.getValue("Age"));
+			tempO.setAboutMe(attributes.getValue("AboutMe"));
+			tempO.setViews(attributes.getValue("Views"));
+			tempO.setUpVotes(attributes.getValue("UpVotes"));
+			tempO.setDownVotes(attributes.getValue("DownVotes"));
+			//System.out.println(tempEmp.toString()+"\n");
 			count++;
-			tempString.append(tempO.getType()+"\t"+tempO.getName()+"\t"+tempO.getId()+"\t"+tempO.getAge()+"\n");
-			//tempString.append("('"+tempO.getType()+"','"+tempO.getName()+"','"+tempO.getId()+"','"+tempO.getAge()+"'),");
-			//System.out.println(tempO.toString()+"\n");
-			
-
-		}
-		//1000 times
-		if((count != 0)&&(count%10 == 0)){
-			//InputStream is = new ByteArrayInputStream(tempString.toString().getBytes());
-			//tempString.deleteCharAt(tempString.length()-1);
-			try {
-				BufferedWriter out = new BufferedWriter(new FileWriter(new File("/tmp/temp.txt")));
-				
-				out.write(tempString.toString());
-				out.close();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+			try{ 
+				pst.setString(1, tempO.getId());
+				pst.setString(2, tempO.getReputation());
+				pst.setString(3, tempO.getCreationDate());
+				pst.setString(4, tempO.getDisplayName());
+				pst.setString(5, tempO.getEmailHash());
+				pst.setString(6, tempO.getLastAccessDate());			
+				pst.setString(7, tempO.getWebsiteUrl());
+				pst.setString(8, tempO.getLocation());
+				pst.setString(9, tempO.getAge());			
+				pst.setString(10, tempO.getAboutMe());
+				pst.setString(11, tempO.getViews());
+				pst.setString(12, tempO.getUpVotes());
+				pst.setString(13, tempO.getDownVotes());
+				pst.addBatch();   }
+			catch (SQLException e) {
+				e.printStackTrace();
 			}
 
-			System.out.println("save " + count +" rows now ...");
+			/*tempString.append("('"+tempO.getId()+"','"+tempO.getReputation()+"','"
+			+tempO.getCreationDate()+"','"
+			+tempO.getDisplayName()+"','"
+			+tempO.getEmailHash()
+			+"','"+tempO.getLastAccessDate()+"','"+tempO.getWebsiteUrl()
+			+"','"+tempO.getLocation()+"','"+tempO.getAge()
+			+"','"+tempO.getAboutMe()+"','"+tempO.getViews()
+			+"','"+tempO.getUpVotes()+"','"+tempO.getDownVotes()
+			+"'),");*/
+		}
+
+		//1000 times
+		if((count != 0)&&((count % 1000) == 0)){
+			try{
+				pst.executeBatch();
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			//InputStream is = new ByteArrayInputStream(tempString.toString().getBytes());
+			/*tempString.deleteCharAt(tempString.length()-1);
+			System.out.println("have saved " + count +" rows now ...");
 			try{
 				Statement st = con.createStatement();
-                //st.executeUpdate("insert into employee values "+ tempString);
-				st.executeUpdate("LOAD DATA LOCAL INFILE '/tmp/temp.txt' into table employee");
+                	st.executeUpdate("insert into users values "+ tempString);
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
-			}
+			}*/
 			System.out.println("done!");
-			count = 1;
-            tempString.delete(0, tempString.capacity());
+			//tempString.delete(0, tempString.capacity());
 		}
-		left = tempString;
+		//left = tempString;
 
 		/*else if (qName.equalsIgnoreCase("Name")) {
 			pName = true;
-			tempO.setType(attributes.getValue("Name"));
-			System.out.println(tempO.toString()+"\n");
+			tempEmp.setType(attributes.getValue("Name"));
+			System.out.println(tempEmp.toString()+"\n");
 		}else if (qName.equalsIgnoreCase("Id")) {
 			pId = true;
-			tempO.setType(attributes.getValue("Id"));
-			System.out.println(tempO.toString()+"\n");
+			tempEmp.setType(attributes.getValue("Id"));
+			System.out.println(tempEmp.toString()+"\n");
 		}else if (qName.equalsIgnoreCase("Age")) {
 			pAge = true;
-			tempO.setType(attributes.getValue("Age"));
-			System.out.println(tempO.toString()+"\n");
+			tempEmp.setType(attributes.getValue("Age"));
+			System.out.println(tempEmp.toString()+"\n");
 		}*/
 	}
 
@@ -147,82 +161,66 @@ public class XMLParser extends DefaultHandler{
 	/*	public void characters(char[] ch, int start, int length) throws SAXException {
 		tempVal = new String(ch,start,length);
         if (pType) {
-           tempO.setType(tempVal);
-			System.out.println(tempO.toString()+"\n");
+           tempEmp.setType(tempVal);
+			System.out.println(tempEmp.toString()+"\n");
             pType = false;
         } else if (pName){
-        	tempO.setName(tempVal);
-			System.out.println(tempO.toString()+"\n");
+        	tempEmp.setName(tempVal);
+			System.out.println(tempEmp.toString()+"\n");
         	pName = false;
         }else if (pId){
-        	tempO.setId(Integer.parseInt(tempVal));
-			System.out.println(tempO.toString()+"\n");
+        	tempEmp.setId(Integer.parseInt(tempVal));
+			System.out.println(tempEmp.toString()+"\n");
         	pId = false;
         } else if (pAge){
-        	tempO.setAge(Integer.parseInt(tempVal));
-			System.out.println(tempO.toString()+"\n");
+        	tempEmp.setAge(Integer.parseInt(tempVal));
+			System.out.println(tempEmp.toString()+"\n");
         	pAge = false;
         }
 	}*/
 
 	/*	public void endElement(String uri, String localName, String qName) throws SAXException {
 
-		System.out.println(tempO.toString()+"\nabcd");
+		System.out.println(tempEmp.toString()+"\nabcd");
 
 		//if(qName.equalsIgnoreCase("/")) {
 			//an entry is ready and save it
 			try{
 				Statement st = con.createStatement();
-				st.executeUpdate("insert into employee values ('"+ tempO.getType() + "','"+ tempO.getName()+
-						"','"+tempO.getId()+ "','" + tempO.getAge() +"')");
+				st.executeUpdate("insert into employee values ('"+ tempEmp.getType() + "','"+ tempEmp.getName()+
+						"','"+tempEmp.getId()+ "','" + tempEmp.getAge() +"')");
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
 
 		}else if (qName.equalsIgnoreCase("Name")) {
-			tempO.setName(tempVal);
+			tempEmp.setName(tempVal);
 		}else if (qName.equalsIgnoreCase("Id")) {
-			tempO.setId(Integer.parseInt(tempVal));
+			tempEmp.setId(Integer.parseInt(tempVal));
 		}else if (qName.equalsIgnoreCase("Age")) {
-			tempO.setAge(Integer.parseInt(tempVal));
+			tempEmp.setAge(Integer.parseInt(tempVal));
 		}
 	}*/
 
 	public static void main(String[] args){
 		XMLParser xmlp = new XMLParser();
 		xmlp.parseDocument();
+
 		//save the last part
 		connectDB connectdb = new connectDB();
 		Connection connect = connectdb.conDB();
-		
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(new File("/tmp/temp.txt")));
-			
-			out.write(left.toString());
-			out.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
+
+
+		/*left.deleteCharAt(left.length()-1);
 		try{
 			Statement st = connect.createStatement();
-            //st.executeUpdate("insert into employee values "+ tempString);
-			st.executeUpdate("LOAD DATA LOCAL INFILE '/tmp/temp.txt' into table employee");
+            		st.executeUpdate("insert into users values "+ left);
 			st.close();
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
-/*		left.deleteCharAt(left.length()-1);
-		try{
-			Statement st = connect.createStatement();
-            st.executeUpdate("insert into employee values "+ left);
-			st.close();
+			System.out.println("Finally!!!");
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}*/
-
 		//ArrayList<Employee> myEmpls = xmlp.parseDocument();
 
 		/*		for(int i=0; i < myEmpls.size(); i++) {
