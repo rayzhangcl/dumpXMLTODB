@@ -1,28 +1,28 @@
 package ca.ualberta.cs.chenlei;
 
 public class Users {
-	private int Id;
-	private int Reputation;
+	private String Id;
+	private String Reputation;
 	private String CreationDate;
 	private String DisplayName;
 	private String EmailHash;
 	private String LastAccessDate;
 	private String WebsiteUrl;
 	private String Location;
-	private int Age;
+	private String Age;
 	private String AboutMe;
-	private int Views;
-	private int UpVotes;
-	private int DownVotes;
+	private String Views;
+	private String UpVotes;
+	private String DownVotes;
 	
 	public Users(){
 		
 	}
 
-	public Users(int id, int reputation, String creationDate,
+	public Users(String id, String reputation, String creationDate,
 			String displayName, String emailHash, String lastAccessDate,
-			String websiteUrl, String location, int age, String aboutMe,
-			int views, int upVotes, int downVotes) {
+			String websiteUrl, String location, String age, String aboutMe,
+			String views, String upVotes, String downVotes) {
 		super();
 		Id = id;
 		Reputation = reputation;
@@ -40,16 +40,16 @@ public class Users {
 	}
 
 
-	public int getId() {
+	public String getId() {
 		return Id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		Id = id;
 	}
-	public int getReputation() {
+	public String getReputation() {
 		return Reputation;
 	}
-	public void setReputation(int reputation) {
+	public void setReputation(String reputation) {
 		Reputation = reputation;
 	}
 	public String getCreationDate() {
@@ -88,10 +88,10 @@ public class Users {
 	public void setLocation(String location) {
 		Location = location;
 	}
-	public int getAge() {
+	public String getAge() {
 		return Age;
 	}
-	public void setAge(int age) {
+	public void setAge(String age) {
 		Age = age;
 	}
 	public String getAboutMe() {
@@ -100,22 +100,22 @@ public class Users {
 	public void setAboutMe(String aboutMe) {
 		AboutMe = aboutMe;
 	}
-	public int getViews() {
+	public String getViews() {
 		return Views;
 	}
-	public void setViews(int views) {
+	public void setViews(String views) {
 		Views = views;
 	}
-	public int getUpVotes() {
+	public String getUpVotes() {
 		return UpVotes;
 	}
-	public void setUpVotes(int upVotes) {
+	public void setUpVotes(String upVotes) {
 		UpVotes = upVotes;
 	}
-	public int getDownVotes() {
+	public String getDownVotes() {
 		return DownVotes;
 	}
-	public void setDownVotes(int downVotes) {
+	public void setDownVotes(String downVotes) {
 		DownVotes = downVotes;
 	}
 
