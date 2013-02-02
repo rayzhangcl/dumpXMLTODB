@@ -1,12 +1,16 @@
 package ca.ualberta.cs.chenlei;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -30,6 +34,7 @@ public class XMLParser extends DefaultHandler{
 	//ArrayList<Employee> myEmpls = null;
 	Connection con = null;
 	Statement st = null;
+	PreparedStatement pst = null;
 	//private String tempVal;
 	private Employee tempO;
 	private StringBuilder tempString = new StringBuilder();
@@ -41,7 +46,13 @@ public class XMLParser extends DefaultHandler{
 		//connect database
 		connectDB connectdb = new connectDB();
 		con = connectdb.conDB();
-
+		
+		/*try{pst = con.prepareStatement("insert into Employee '(' Id','Reputation', 'CreationDate','DisplayName','" +
+				"EmailHash','LastAccessDate',' WebsiteUrl','Location','Age','AboutMe',' Views',' UpVotes',' DownVotes')'" +
+				"Values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}*/
 		//get a factory
 		SAXParserFactory spf = SAXParserFactory.newInstance();
 		try {
@@ -82,18 +93,31 @@ public class XMLParser extends DefaultHandler{
 			//tempO.setUserId(Integer.parseInt(attributes.getValue("UserId")));
 			//tempO.setDate(attributes.getValue("Date"));
 			count++;
-			tempString.append("('"+tempO.getType()+"','"+tempO.getName()+"','"+tempO.getId()+"','"+tempO.getAge()+"'),");
+			tempString.append(tempO.getType()+"\t"+tempO.getName()+"\t"+tempO.getId()+"\t"+tempO.getAge()+"\n");
+			//tempString.append("('"+tempO.getType()+"','"+tempO.getName()+"','"+tempO.getId()+"','"+tempO.getAge()+"'),");
 			//System.out.println(tempO.toString()+"\n");
+			
 
 		}
 		//1000 times
-		if(count == 10){
+		if((count != 0)&&(count%10 == 0)){
 			//InputStream is = new ByteArrayInputStream(tempString.toString().getBytes());
-			tempString.deleteCharAt(tempString.length()-1);
+			//tempString.deleteCharAt(tempString.length()-1);
+			try {
+				BufferedWriter out = new BufferedWriter(new FileWriter(new File("/tmp/temp.txt")));
+				
+				out.write(tempString.toString());
+				out.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
 			System.out.println("save " + count +" rows now ...");
 			try{
 				Statement st = con.createStatement();
-                st.executeUpdate("insert into employee values "+ tempString);
+                //st.executeUpdate("insert into employee values "+ tempString);
+				st.executeUpdate("LOAD DATA LOCAL INFILE '/tmp/temp.txt' into table employee");
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
@@ -171,14 +195,33 @@ public class XMLParser extends DefaultHandler{
 		//save the last part
 		connectDB connectdb = new connectDB();
 		Connection connect = connectdb.conDB();
-		left.deleteCharAt(left.length()-1);
+		
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(new File("/tmp/temp.txt")));
+			
+			out.write(left.toString());
+			out.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		try{
+			Statement st = connect.createStatement();
+            //st.executeUpdate("insert into employee values "+ tempString);
+			st.executeUpdate("LOAD DATA LOCAL INFILE '/tmp/temp.txt' into table employee");
+			st.close();
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+/*		left.deleteCharAt(left.length()-1);
 		try{
 			Statement st = connect.createStatement();
             st.executeUpdate("insert into employee values "+ left);
 			st.close();
 		}catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		//ArrayList<Employee> myEmpls = xmlp.parseDocument();
 

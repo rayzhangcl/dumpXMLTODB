@@ -18,8 +18,7 @@ public class Users {
 	public Users(){
 		
 	}
-	
-	
+
 	public Users(int id, int reputation, String creationDate,
 			String displayName, String emailHash, String lastAccessDate,
 			String websiteUrl, String location, int age, String aboutMe,
