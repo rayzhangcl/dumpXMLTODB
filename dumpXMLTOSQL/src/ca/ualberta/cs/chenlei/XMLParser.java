@@ -24,7 +24,7 @@ public class XMLParser extends DefaultHandler{
 	Connection con = null;
 	Statement st = null;
 	//private String tempVal;
-	private Employee tempEmp;
+	private Badges tempO;
 
 	private void parseDocument() {
 		//myEmpls = new ArrayList<Employee>();
@@ -40,7 +40,7 @@ public class XMLParser extends DefaultHandler{
 			SAXParser sp = spf.newSAXParser();
 
 			//parse the file and also register this class for call backs
-			sp.parse("employees.xml", this);
+			sp.parse("stack-overflow/*.xml", this);
 
 		}catch(SAXException se) {
 			se.printStackTrace();
@@ -62,19 +62,19 @@ public class XMLParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		//tempVal = "";
-		tempEmp = new Employee();
+		tempO = new Badges();
 		if(qName.equalsIgnoreCase("row")) {
 			//create a new instance of employee
-			tempEmp.setType(attributes.getValue("type"));
-			tempEmp.setName(attributes.getValue("Name"));
-			tempEmp.setId(Integer.parseInt(attributes.getValue("Id")));
-			tempEmp.setAge(Integer.parseInt(attributes.getValue("Age")));
-			System.out.println(tempEmp.toString()+"\n");
+			tempO.setId(Integer.parseInt(attributes.getValue("Id")));
+			tempO.setName(attributes.getValue("Name"));
+			tempO.setUserId(Integer.parseInt(attributes.getValue("UserId")));
+			tempO.setDate(attributes.getValue("Date"));
+			System.out.println(tempO.toString()+"\n");
 
 			try{
 				Statement st = con.createStatement();
-				st.executeUpdate("insert into employee values ('"+ tempEmp.getType() + "','"+ tempEmp.getName()+
-						"','"+tempEmp.getId()+ "','" + tempEmp.getAge() +"')");
+				st.executeUpdate("insert into badges values ('"+ tempO.getId() + "','"+ tempO.getUserId()+
+						"','"+tempO.getName()+ "','" + tempO.getDate() +"')");
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
@@ -83,16 +83,16 @@ public class XMLParser extends DefaultHandler{
 
 		/*else if (qName.equalsIgnoreCase("Name")) {
 			pName = true;
-			tempEmp.setType(attributes.getValue("Name"));
-			System.out.println(tempEmp.toString()+"\n");
+			tempO.setType(attributes.getValue("Name"));
+			System.out.println(tempO.toString()+"\n");
 		}else if (qName.equalsIgnoreCase("Id")) {
 			pId = true;
-			tempEmp.setType(attributes.getValue("Id"));
-			System.out.println(tempEmp.toString()+"\n");
+			tempO.setType(attributes.getValue("Id"));
+			System.out.println(tempO.toString()+"\n");
 		}else if (qName.equalsIgnoreCase("Age")) {
 			pAge = true;
-			tempEmp.setType(attributes.getValue("Age"));
-			System.out.println(tempEmp.toString()+"\n");
+			tempO.setType(attributes.getValue("Age"));
+			System.out.println(tempO.toString()+"\n");
 		}*/
 	}
 
@@ -100,45 +100,45 @@ public class XMLParser extends DefaultHandler{
 	/*	public void characters(char[] ch, int start, int length) throws SAXException {
 		tempVal = new String(ch,start,length);
         if (pType) {
-           tempEmp.setType(tempVal);
-			System.out.println(tempEmp.toString()+"\n");
+           tempO.setType(tempVal);
+			System.out.println(tempO.toString()+"\n");
             pType = false;
         } else if (pName){
-        	tempEmp.setName(tempVal);
-			System.out.println(tempEmp.toString()+"\n");
+        	tempO.setName(tempVal);
+			System.out.println(tempO.toString()+"\n");
         	pName = false;
         }else if (pId){
-        	tempEmp.setId(Integer.parseInt(tempVal));
-			System.out.println(tempEmp.toString()+"\n");
+        	tempO.setId(Integer.parseInt(tempVal));
+			System.out.println(tempO.toString()+"\n");
         	pId = false;
         } else if (pAge){
-        	tempEmp.setAge(Integer.parseInt(tempVal));
-			System.out.println(tempEmp.toString()+"\n");
+        	tempO.setAge(Integer.parseInt(tempVal));
+			System.out.println(tempO.toString()+"\n");
         	pAge = false;
         }
 	}*/
 
 	/*	public void endElement(String uri, String localName, String qName) throws SAXException {
 
-		System.out.println(tempEmp.toString()+"\nabcd");
+		System.out.println(tempO.toString()+"\nabcd");
 
 		//if(qName.equalsIgnoreCase("/")) {
 			//an entry is ready and save it
 			try{
 				Statement st = con.createStatement();
-				st.executeUpdate("insert into employee values ('"+ tempEmp.getType() + "','"+ tempEmp.getName()+
-						"','"+tempEmp.getId()+ "','" + tempEmp.getAge() +"')");
+				st.executeUpdate("insert into employee values ('"+ tempO.getType() + "','"+ tempO.getName()+
+						"','"+tempO.getId()+ "','" + tempO.getAge() +"')");
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}
 
 		}else if (qName.equalsIgnoreCase("Name")) {
-			tempEmp.setName(tempVal);
+			tempO.setName(tempVal);
 		}else if (qName.equalsIgnoreCase("Id")) {
-			tempEmp.setId(Integer.parseInt(tempVal));
+			tempO.setId(Integer.parseInt(tempVal));
 		}else if (qName.equalsIgnoreCase("Age")) {
-			tempEmp.setAge(Integer.parseInt(tempVal));
+			tempO.setAge(Integer.parseInt(tempVal));
 		}
 	}*/
 

@@ -1,12 +1,16 @@
 package ca.ualberta.cs.chenlei;
 
-public class badges {
+public class Badges {
 	private int Id;
 	private int UserId;
 	private String Name;
 	private String Date;
+	
+	public Badges(){
+		
+	}
 
-	public badges(int Id, int UserId, String Name, String Date){
+	public Badges(int Id, int UserId, String Name, String Date){
 		this.Id = Id;
 		this.UserId = UserId;
 		this.Name = Name;
