@@ -24,7 +24,7 @@ public class XMLParser extends DefaultHandler{
 	Connection con = null;
 	Statement st = null;
 	//private String tempVal;
-	private Users tempO;
+	private Votes tempO;
 	PreparedStatement pst = null;
 	//private StringBuilder tempString = new StringBuilder();
 	//private static StringBuilder left = new StringBuilder();
@@ -41,7 +41,7 @@ public class XMLParser extends DefaultHandler{
 		}
 
 
-		try{pst = con.prepareStatement("insert into users values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
+		try{pst = con.prepareStatement("insert into Votes values (?,?,?,?,?,?,?)");
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -53,7 +53,7 @@ public class XMLParser extends DefaultHandler{
 			SAXParser sp = spf.newSAXParser();
 
 			//parse the file and also register this class for call backs
-			sp.parse("stack-overflow/users.xml", this);
+			sp.parse("stack-overflow/votes.xml", this);
 
 		}catch(SAXException se) {
 			se.printStackTrace();
@@ -77,38 +77,32 @@ public class XMLParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		//tempVal = "";
-		tempO = new Users();
+		tempO = new Votes();
 		if(qName.equalsIgnoreCase("row")) {
 			//create a new instance of employee
-			tempO.setId(attributes.getValue("Id"));
-			tempO.setReputation(attributes.getValue("Reputation"));	
+			tempO.setId(Integer.parseInt(attributes.getValue("Id")));
+			tempO.setPostId(Integer.parseInt(attributes.getValue("PostId")));	
+			tempO.setVoteTypeId(Integer.parseInt(attributes.getValue("VoteTypeId")));
+			
+			if(tempO.getVoteTypeId() == 5){
+				tempO.setUserId(Integer.parseInt(attributes.getValue("UserId")));
+			}
+			
+			if(tempO.getVoteTypeId() == 9){
+				tempO.setUserId(Integer.parseInt(attributes.getValue("BountyAmount")));
+			}
 			tempO.setCreationDate(attributes.getValue("CreationDate"));
-			tempO.setDisplayName(attributes.getValue("DisplayName"));
-			tempO.setEmailHash(attributes.getValue("EmailHash"));
-			tempO.setLastAccessDate(attributes.getValue("LastAccessDate"));
-			tempO.setWebsiteUrl(attributes.getValue("WebsiteUrl"));
-			tempO.setLocation(attributes.getValue("Location"));
-			tempO.setAge(attributes.getValue("Age"));
-			tempO.setAboutMe(attributes.getValue("AboutMe"));
-			tempO.setViews(attributes.getValue("Views"));
-			tempO.setUpVotes(attributes.getValue("UpVotes"));
-			tempO.setDownVotes(attributes.getValue("DownVotes"));
 			//System.out.println(tempEmp.toString()+"\n");
 			count++;
 			try{ 
-				pst.setString(1, tempO.getId());
-				pst.setString(2, tempO.getReputation());
-				pst.setString(3, tempO.getCreationDate());
-				pst.setString(4, tempO.getDisplayName());
-				pst.setString(5, tempO.getEmailHash());
-				pst.setString(6, tempO.getLastAccessDate());			
-				pst.setString(7, tempO.getWebsiteUrl());
-				pst.setString(8, tempO.getLocation());
-				pst.setString(9, tempO.getAge());			
-				pst.setString(10, tempO.getAboutMe());
-				pst.setString(11, tempO.getViews());
-				pst.setString(12, tempO.getUpVotes());
-				pst.setString(13, tempO.getDownVotes());
+				pst.setInt(1, tempO.getId());
+				pst.setInt(2, tempO.getPostId());
+				pst.setInt(3, tempO.getVoteTypeId());
+				pst.setString(4, tempO.getVoteType(tempO.getVoteTypeId()));
+				pst.setString(5, tempO.getCreationDate());
+				pst.setInt(6, tempO.getUserId());			
+				pst.setInt(7, tempO.getBountyAmount());
+
 				pst.addBatch();   
 			}
 			catch (SQLException e) {
@@ -150,7 +144,7 @@ public class XMLParser extends DefaultHandler{
 			System.out.println("have saved " + count +" rows now ...");
 			try{
 				Statement st = con.createStatement();
-                	st.executeUpdate("insert into users values "+ tempString);
+                	st.executeUpdate("insert into Votes values "+ tempString);
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
@@ -232,7 +226,7 @@ public class XMLParser extends DefaultHandler{
 		/*left.deleteCharAt(left.length()-1);
 		try{
 			Statement st = connect.createStatement();
-            		st.executeUpdate("insert into users values "+ left);
+            		st.executeUpdate("insert into Votes values "+ left);
 			st.close();
 			System.out.println("Finally!!!");
 		}catch (SQLException e) {
