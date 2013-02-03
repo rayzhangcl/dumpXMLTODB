@@ -1,9 +1,9 @@
 package ca.ualberta.cs.chenlei;
 
 import java.io.IOException;
-import java.util.ArrayList;
+/*import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.List;*/
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,14 +26,20 @@ public class XMLParser extends DefaultHandler{
 	//private String tempVal;
 	private Users tempO;
 	PreparedStatement pst = null;
-	private StringBuilder tempString = new StringBuilder();
-	private static StringBuilder left = new StringBuilder();
+	//private StringBuilder tempString = new StringBuilder();
+	//private static StringBuilder left = new StringBuilder();
 	private int count = 0;
 	private void parseDocument() {
 		//myEmpls = new ArrayList<Employee>();
 		//connect database
 		connectDB connectdb = new connectDB();
 		con = connectdb.conDB();
+		try{
+			con.setAutoCommit(false);
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 
 		try{pst = con.prepareStatement("insert into users values (?,?,?,?,?,?,?,?,?,?,?,?,?)");
 		}catch (SQLException e) {
@@ -59,6 +65,7 @@ public class XMLParser extends DefaultHandler{
 
 		try{
 			pst.executeBatch();
+			con.commit();
 			con.close();
 		}catch (SQLException e) {
 			e.printStackTrace();
@@ -102,7 +109,8 @@ public class XMLParser extends DefaultHandler{
 				pst.setString(11, tempO.getViews());
 				pst.setString(12, tempO.getUpVotes());
 				pst.setString(13, tempO.getDownVotes());
-				pst.addBatch();   }
+				pst.addBatch();   
+			}
 			catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -118,14 +126,24 @@ public class XMLParser extends DefaultHandler{
 			+"'),");*/
 		}
 
-		//1000 times
-		if((count != 0)&&((count % 1000) == 0)){
+		//10000 times
+		if((count != 0)&&((count % 10000) == 0)){
+			System.out.println("have saved " + count +" rows now ...");
+
 			try{
 				pst.executeBatch();
 			}
 			catch (SQLException e) {
 				e.printStackTrace();
 			}
+
+			try{
+				con.commit();
+				con.setAutoCommit(false);
+			}catch (SQLException e) {
+				e.printStackTrace();
+			}
+			System.out.println("done!");
 
 			//InputStream is = new ByteArrayInputStream(tempString.toString().getBytes());
 			/*tempString.deleteCharAt(tempString.length()-1);
@@ -137,7 +155,6 @@ public class XMLParser extends DefaultHandler{
 			}catch (SQLException e) {
 				e.printStackTrace();
 			}*/
-			System.out.println("done!");
 			//tempString.delete(0, tempString.capacity());
 		}
 		//left = tempString;
@@ -208,8 +225,8 @@ public class XMLParser extends DefaultHandler{
 		xmlp.parseDocument();
 
 		//save the last part
-		connectDB connectdb = new connectDB();
-		Connection connect = connectdb.conDB();
+		//connectDB connectdb = new connectDB();
+		//Connection connect = connectdb.conDB();
 
 
 		/*left.deleteCharAt(left.length()-1);
