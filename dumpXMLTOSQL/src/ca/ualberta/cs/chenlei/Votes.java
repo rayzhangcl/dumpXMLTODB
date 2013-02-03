@@ -1,20 +1,20 @@
 package ca.ualberta.cs.chenlei;
 
 public class Votes {
-	private int Id;
-	private int PostId;
-	private int VoteTypeId;
+	private String Id;
+	private String PostId;
+	private String VoteTypeId;
 	private String VoteType;
 	private String CreationDate;
 
-	private int UserId = 0;
-	private int BountyAmount = 0;
+	private String UserId = null;
+	private String BountyAmount = null;
 	
 	public Votes(){
 		
 	}
 
-	public Votes(int id, int postId, int voteTypeId, String creationDate) {
+	public Votes(String id, String postId, String voteTypeId, String creationDate) {
 		super();
 		Id = id;
 		PostId = postId;
@@ -22,27 +22,27 @@ public class Votes {
 		CreationDate = creationDate;
 	}
 
-	public int getId() {
+	public String getId() {
 		 return Id;
 	}
 
-	public void setId(int id) {
+	public void setId(String id) {
 		Id = id;
 	}
 
-	public int getPostId() {
+	public String getPostId() {
 		 return PostId;
 	}
 
-	public void setPostId(int postId) {
+	public void setPostId(String postId) {
 		PostId = postId;
 	}
 
-	public int getVoteTypeId() {
+	public String getVoteTypeId() {
 		return VoteTypeId;
 	}
 
-	public void setVoteTypeId(int voteTypeId) {
+	public void setVoteTypeId(String voteTypeId) {
 		VoteTypeId = voteTypeId;
 	}
 
@@ -54,40 +54,40 @@ public class Votes {
 		CreationDate = creationDate;
 	}
 	
-	public String getVoteType(int votetypeid){
+	public String getVoteType(String votetypeid){
 
 		switch (votetypeid){
-		case 1:  VoteType = "AcceptedByOriginator"; break;
-		case 2:  VoteType = "UpMOd"; break;
-		case 3:  VoteType = "DownMod"; break;
-		case 4:  VoteType = "Offensive"; break;
-		case 5:  VoteType = "Favorite"; break;
-		case 6:  VoteType = "Close"; break;
-		case 7:  VoteType = "Reopen"; break;
-		case 8:  VoteType = "BountyStart"; break;
-		case 9:  VoteType = "BountyClose"; break;
-		case 10:  VoteType = "Deletion"; break;
-		case 11:  VoteType = "Undeletion"; break;
-		case 12:  VoteType = "Spam"; break;
-		case 13:  VoteType = "InfromModerator"; break;
+		case "1":  VoteType = "AcceptedByOriginator"; break;
+		case "2":  VoteType = "UpMOd"; break;
+		case "3":  VoteType = "DownMod"; break;
+		case "4":  VoteType = "Offensive"; break;
+		case "5":  VoteType = "Favorite"; break;
+		case "6":  VoteType = "Close"; break;
+		case "7":  VoteType = "Reopen"; break;
+		case "8":  VoteType = "BountyStart"; break;
+		case "9":  VoteType = "BountyClose"; break;
+		case "10":  VoteType = "Deletion"; break;
+		case "11":  VoteType = "Undeletion"; break;
+		case "12":  VoteType = "Spam"; break;
+		case "13":  VoteType = "InfromModerator"; break;
 		
 		}
 		return VoteType;
 	}
 	
-	public int getUserId() {
+	public String getUserId() {
 		 return UserId;
 	}
 
-	public void setUserId(int userid) {
+	public void setUserId(String userid) {
 		UserId = userid;
 	}
 	
-	public int getBountyAmount() {
+	public String getBountyAmount() {
 		 return BountyAmount;
 	}
 
-	public void setBountyAmount(int bountyamount) {
+	public void setBountyAmount(String bountyamount) {
 		BountyAmount = bountyamount;
 	}
 }

@@ -41,7 +41,7 @@ public class XMLParser extends DefaultHandler{
 		}
 
 
-		try{pst = con.prepareStatement("insert into Votes values (?,?,?,?,?,?,?)");
+		try{pst = con.prepareStatement("insert into votes values (?,?,?,?,?,?,?)");
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -80,28 +80,28 @@ public class XMLParser extends DefaultHandler{
 		tempO = new Votes();
 		if(qName.equalsIgnoreCase("row")) {
 			//create a new instance of employee
-			tempO.setId(Integer.parseInt(attributes.getValue("Id")));
-			tempO.setPostId(Integer.parseInt(attributes.getValue("PostId")));	
-			tempO.setVoteTypeId(Integer.parseInt(attributes.getValue("VoteTypeId")));
+			tempO.setId(attributes.getValue("Id"));
+			tempO.setPostId(attributes.getValue("PostId"));	
+			tempO.setVoteTypeId(attributes.getValue("VoteTypeId"));
 			
-			if(tempO.getVoteTypeId() == 5){
-				tempO.setUserId(Integer.parseInt(attributes.getValue("UserId")));
+			if(tempO.getVoteTypeId() == "5"){
+				tempO.setUserId(attributes.getValue("UserId"));
 			}
 			
-			if(tempO.getVoteTypeId() == 9){
-				tempO.setUserId(Integer.parseInt(attributes.getValue("BountyAmount")));
+			if(tempO.getVoteTypeId() == "9"){
+				tempO.setUserId(attributes.getValue("BountyAmount"));
 			}
 			tempO.setCreationDate(attributes.getValue("CreationDate"));
 			//System.out.println(tempEmp.toString()+"\n");
 			count++;
 			try{ 
-				pst.setInt(1, tempO.getId());
-				pst.setInt(2, tempO.getPostId());
-				pst.setInt(3, tempO.getVoteTypeId());
+				pst.setString(1, tempO.getId());
+				pst.setString(2, tempO.getPostId());
+				pst.setString(3, tempO.getVoteTypeId());
 				pst.setString(4, tempO.getVoteType(tempO.getVoteTypeId()));
 				pst.setString(5, tempO.getCreationDate());
-				pst.setInt(6, tempO.getUserId());			
-				pst.setInt(7, tempO.getBountyAmount());
+				pst.setString(6, tempO.getUserId());			
+				pst.setString(7, tempO.getBountyAmount());
 
 				pst.addBatch();   
 			}
@@ -180,11 +180,11 @@ public class XMLParser extends DefaultHandler{
 			System.out.println(tempEmp.toString()+"\n");
         	pName = false;
         }else if (pId){
-        	tempEmp.setId(Integer.parseInt(tempVal));
+        	tempEmp.setId( (tempVal));
 			System.out.println(tempEmp.toString()+"\n");
         	pId = false;
         } else if (pAge){
-        	tempEmp.setAge(Integer.parseInt(tempVal));
+        	tempEmp.setAge( (tempVal));
 			System.out.println(tempEmp.toString()+"\n");
         	pAge = false;
         }
@@ -208,9 +208,9 @@ public class XMLParser extends DefaultHandler{
 		}else if (qName.equalsIgnoreCase("Name")) {
 			tempEmp.setName(tempVal);
 		}else if (qName.equalsIgnoreCase("Id")) {
-			tempEmp.setId(Integer.parseInt(tempVal));
+			tempEmp.setId( (tempVal));
 		}else if (qName.equalsIgnoreCase("Age")) {
-			tempEmp.setAge(Integer.parseInt(tempVal));
+			tempEmp.setAge( (tempVal));
 		}
 	}*/
 
