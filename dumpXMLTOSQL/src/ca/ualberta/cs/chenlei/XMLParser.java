@@ -24,7 +24,7 @@ public class XMLParser extends DefaultHandler{
 	Connection con = null;
 	Statement st = null;
 	//private String tempVal;
-	private Votes tempO;
+	private Comments tempO;
 	PreparedStatement pst = null;
 	//private StringBuilder tempString = new StringBuilder();
 	//private static StringBuilder left = new StringBuilder();
@@ -41,7 +41,7 @@ public class XMLParser extends DefaultHandler{
 		}
 
 
-		try{pst = con.prepareStatement("insert into votes values (?,?,?,?,?,?,?)");
+		try{pst = con.prepareStatement("insert into Comments values (?,?,?,?,?,?)");
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -53,7 +53,7 @@ public class XMLParser extends DefaultHandler{
 			SAXParser sp = spf.newSAXParser();
 
 			//parse the file and also register this class for call backs
-			sp.parse("stack-overflow/votes.xml", this);
+			sp.parse("stack-overflow/comments.xml", this);
 
 		}catch(SAXException se) {
 			se.printStackTrace();
@@ -65,6 +65,7 @@ public class XMLParser extends DefaultHandler{
 
 		try{
 			pst.executeBatch();
+			System.out.println("Finally!");
 			con.commit();
 			con.close();
 		}catch (SQLException e) {
@@ -77,31 +78,24 @@ public class XMLParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		//tempVal = "";
-		tempO = new Votes();
+		tempO = new Comments();
 		if(qName.equalsIgnoreCase("row")) {
 			//create a new instance of employee
 			tempO.setId(attributes.getValue("Id"));
 			tempO.setPostId(attributes.getValue("PostId"));	
-			tempO.setVoteTypeId(attributes.getValue("VoteTypeId"));
-			
-			if(tempO.getVoteTypeId() == "5"){
-				tempO.setUserId(attributes.getValue("UserId"));
-			}
-			
-			if(tempO.getVoteTypeId() == "9"){
-				tempO.setUserId(attributes.getValue("BountyAmount"));
-			}
+			tempO.setScore(attributes.getValue("Score"));
+			tempO.setText(attributes.getValue("Text"));			
 			tempO.setCreationDate(attributes.getValue("CreationDate"));
+			tempO.setUserId(attributes.getValue("UserId"));		
 			//System.out.println(tempEmp.toString()+"\n");
 			count++;
 			try{ 
 				pst.setString(1, tempO.getId());
 				pst.setString(2, tempO.getPostId());
-				pst.setString(3, tempO.getVoteTypeId());
-				pst.setString(4, tempO.getVoteType(tempO.getVoteTypeId()));
+				pst.setString(3, tempO.getScore());
+				pst.setString(4, tempO.getText());
 				pst.setString(5, tempO.getCreationDate());
 				pst.setString(6, tempO.getUserId());			
-				pst.setString(7, tempO.getBountyAmount());
 
 				pst.addBatch();   
 			}
@@ -116,7 +110,7 @@ public class XMLParser extends DefaultHandler{
 			+"','"+tempO.getLastAccessDate()+"','"+tempO.getWebsiteUrl()
 			+"','"+tempO.getLocation()+"','"+tempO.getAge()
 			+"','"+tempO.getAboutMe()+"','"+tempO.getViews()
-			+"','"+tempO.getUpVotes()+"','"+tempO.getDownVotes()
+			+"','"+tempO.getUpComments()+"','"+tempO.getDownComments()
 			+"'),");*/
 		}
 
@@ -144,7 +138,7 @@ public class XMLParser extends DefaultHandler{
 			System.out.println("have saved " + count +" rows now ...");
 			try{
 				Statement st = con.createStatement();
-                	st.executeUpdate("insert into Votes values "+ tempString);
+                	st.executeUpdate("insert into Comments values "+ tempString);
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
@@ -226,7 +220,7 @@ public class XMLParser extends DefaultHandler{
 		/*left.deleteCharAt(left.length()-1);
 		try{
 			Statement st = connect.createStatement();
-            		st.executeUpdate("insert into Votes values "+ left);
+            		st.executeUpdate("insert into Comments values "+ left);
 			st.close();
 			System.out.println("Finally!!!");
 		}catch (SQLException e) {
