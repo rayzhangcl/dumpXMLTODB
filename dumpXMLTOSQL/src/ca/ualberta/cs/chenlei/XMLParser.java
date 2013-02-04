@@ -24,7 +24,7 @@ public class XMLParser extends DefaultHandler{
 	Connection con = null;
 	Statement st = null;
 	//private String tempVal;
-	private Comments tempO;
+	private Posts tempO;
 	PreparedStatement pst = null;
 	//private StringBuilder tempString = new StringBuilder();
 	//private static StringBuilder left = new StringBuilder();
@@ -41,7 +41,7 @@ public class XMLParser extends DefaultHandler{
 		}
 
 
-		try{pst = con.prepareStatement("insert into Comments values (?,?,?,?,?,?)");
+		try{pst = con.prepareStatement("insert into posts values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");//20
 		}catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -53,7 +53,7 @@ public class XMLParser extends DefaultHandler{
 			SAXParser sp = spf.newSAXParser();
 
 			//parse the file and also register this class for call backs
-			sp.parse("stack-overflow/comments.xml", this);
+			sp.parse("stack-overflow/posts.xml", this);
 
 		}catch(SAXException se) {
 			se.printStackTrace();
@@ -78,24 +78,58 @@ public class XMLParser extends DefaultHandler{
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		//reset
 		//tempVal = "";
-		tempO = new Comments();
+		tempO = new Posts();
 		if(qName.equalsIgnoreCase("row")) {
 			//create a new instance of employee
 			tempO.setId(attributes.getValue("Id"));
-			tempO.setPostId(attributes.getValue("PostId"));	
-			tempO.setScore(attributes.getValue("Score"));
-			tempO.setText(attributes.getValue("Text"));			
+			tempO.setPostTypeId(attributes.getValue("PostTypeId"));	
+			tempO.setParentId(attributes.getValue("ParentId"));
+			tempO.setAcceptedAnswerId(attributes.getValue("AcceptedAnswerId"));
 			tempO.setCreationDate(attributes.getValue("CreationDate"));
-			tempO.setUserId(attributes.getValue("UserId"));		
+			tempO.setScore(attributes.getValue("Score"));
+			tempO.setViewCount(attributes.getValue("ViewCount"));
+			tempO.setBody(attributes.getValue("Body"));
+			tempO.setOwnerUserId(attributes.getValue("OwnerUserId"));
+			tempO.setLastEditorUserId(attributes.getValue("LastEditorUserId"));
+			tempO.setLastEditorDisplayName(attributes.getValue("LastEditorDisplayName"));
+			tempO.setLastEditDate(attributes.getValue("LastEditDate"));
+			tempO.setLastActivityDate(attributes.getValue("LastActivityDate"));
+			tempO.setCommunityOwnedDate(attributes.getValue("CommunityOwnedDate"));
+			tempO.setClosedDate(attributes.getValue("ClosedDate"));
+			tempO.setTitle(attributes.getValue("Title"));
+			tempO.setTags(attributes.getValue("Tags"));
+			tempO.setAnswerCount(attributes.getValue("AnswerCount"));
+			tempO.setCommentCount(attributes.getValue("CommentCount"));
+			tempO.setFavoriteCount(attributes.getValue("FavoriteCount"));
 			//System.out.println(tempEmp.toString()+"\n");
 			count++;
 			try{ 
 				pst.setString(1, tempO.getId());
-				pst.setString(2, tempO.getPostId());
-				pst.setString(3, tempO.getScore());
-				pst.setString(4, tempO.getText());
-				pst.setString(5, tempO.getCreationDate());
-				pst.setString(6, tempO.getUserId());			
+				pst.setString(2, tempO.getPostTypeId());
+				if(Integer.parseInt(tempO.getPostTypeId()) == 1){
+					pst.setString(3, "Question");
+				}
+				if(Integer.parseInt(tempO.getPostTypeId()) == 2){
+					pst.setString(3, "Answer");
+				}
+				pst.setString(4, tempO.getParentId());
+				pst.setString(5, tempO.getAcceptedAnswerId());
+				pst.setString(6, tempO.getCreationDate());	
+				pst.setString(7, tempO.getScore());
+				pst.setString(8, tempO.getViewCount());
+				pst.setString(9, tempO.getBody());
+				pst.setString(10, tempO.getOwnerUserId());
+				pst.setString(11, tempO.getLastEditorUserId());
+				pst.setString(12, tempO.getLastEditorDisplayName());
+				pst.setString(13, tempO.getLastEditDate());
+				pst.setString(14, tempO.getLastActivityDate());
+				pst.setString(15, tempO.getCommunityOwnedDate());
+				pst.setString(16, tempO.getClosedDate());
+				pst.setString(17, tempO.getTitle());
+				pst.setString(18, tempO.getTags());
+				pst.setString(19, tempO.getAnswerCount());
+				pst.setString(20, tempO.getCommentCount());
+				pst.setString(21, tempO.getFavoriteCount());
 
 				pst.addBatch();   
 			}
@@ -110,7 +144,7 @@ public class XMLParser extends DefaultHandler{
 			+"','"+tempO.getLastAccessDate()+"','"+tempO.getWebsiteUrl()
 			+"','"+tempO.getLocation()+"','"+tempO.getAge()
 			+"','"+tempO.getAboutMe()+"','"+tempO.getViews()
-			+"','"+tempO.getUpComments()+"','"+tempO.getDownComments()
+			+"','"+tempO.getUpPosts()+"','"+tempO.getDownPosts()
 			+"'),");*/
 		}
 
@@ -138,7 +172,7 @@ public class XMLParser extends DefaultHandler{
 			System.out.println("have saved " + count +" rows now ...");
 			try{
 				Statement st = con.createStatement();
-                	st.executeUpdate("insert into Comments values "+ tempString);
+                	st.executeUpdate("insert into Posts values "+ tempString);
 				st.close();
 			}catch (SQLException e) {
 				e.printStackTrace();
@@ -220,7 +254,7 @@ public class XMLParser extends DefaultHandler{
 		/*left.deleteCharAt(left.length()-1);
 		try{
 			Statement st = connect.createStatement();
-            		st.executeUpdate("insert into Comments values "+ left);
+            		st.executeUpdate("insert into Posts values "+ left);
 			st.close();
 			System.out.println("Finally!!!");
 		}catch (SQLException e) {
